@@ -17,7 +17,7 @@ if (typeof Object.create !== 'function') {
 
 (function($, window, document, undefined) {
     "use strict";
-    
+
     var SinglePageNav = {
         
         init: function(options, container) {
@@ -36,6 +36,8 @@ if (typeof Object.create !== 'function') {
             this.$htmlbody = $('html, body');
             
             this.$links.on('click.singlePageNav', $.proxy(this.handleClick, this));
+
+            $( document ).ready($.proxy(this.handleLoad, this));
 
             this.didScroll = false;
             this.checkPosition();
@@ -74,6 +76,28 @@ if (typeof Object.create !== 'function') {
                         self.options.onComplete();
                     }
                 });                            
+            }     
+        },
+
+        handleLoad: function() {
+            var self  = this,
+                hash  = window.location.hash,
+                $elem = $(hash);
+
+            // e.preventDefault();             
+
+            if ($elem.length) { // Make sure the target elem exists
+
+                // Prevent active link from cycling during the scroll
+                self.clearTimer();
+
+                self.setActiveLink(hash);
+                self.$htmlbody.scrollTop(self.getCoords($elem).top);
+
+                setTimeout(function(){
+                    self.$htmlbody.scrollTop(self.getCoords($elem).top);
+                    self.setTimer();
+                },200);                          
             }     
         },
         
